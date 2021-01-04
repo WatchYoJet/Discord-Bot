@@ -121,4 +121,4 @@ async def userinfo(ctx, member: discord.Member = None):
     await ctx.send(embed=embed)
 
 
-client.run('TOKEN')
+client.run(TOKEN)
