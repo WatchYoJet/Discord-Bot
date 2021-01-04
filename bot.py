@@ -76,6 +76,12 @@ async def dinis(ctx):
     await ctx.send('Stfu CringeMan')
     time.sleep(5)
     await ctx.send('JK I SIMP DINIS')
+    
+
+@client.event
+async def on_rank_info(message):
+    if '!rank' in message.content:
+        print('!!!')
 
 
 @client.command()
