@@ -81,7 +81,7 @@ async def dinis(ctx):
 @client.event
 async def on_rank_info(message):
     if '!rank' in message.content:
-        print('!!!')
+        await ctx.send(f'Hi {ctx.author}!')
 
 
 @client.command()
