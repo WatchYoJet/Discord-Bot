@@ -1,9 +1,18 @@
 import discord
+from discord import Embed, PermissionOverwrite, Intents
 from discord.ext import commands
 import random
 import time
 import os
 from dotenv import load_dotenv
+import asyncio
+from discord.utils import get
+from discord import Embed, PermissionOverwrite, Intents
+from discord.ext import commands
+from discord.utils import get
+import os
+import json
+import cryptocompare
 
 client = commands.Bot(command_prefix='$')
 
@@ -26,8 +35,50 @@ def is_it_me(ctx):
     ]
 
 
+def crazy_ones(ctx):
+    return ctx.author.id in [
+        583687913720512538, 192012933281087489, 250715544209063936
+    ]
+
+
 def close_friends(ctx):
-    return ctx.author.id in [692488790069215324, 637336776867971083]
+    return ctx.author.id in [
+        692488790069215324, 637336776867971083, 192012933281087489
+    ]
+
+
+@client.command(name='create-channel')
+async def create_channel(ctx, channel_name='test channel'):
+    guild = ctx.guild
+    existing_channel = discord.utils.get(guild.channels, name=channel_name)
+    if not existing_channel:
+        print(f'Creating a new channel: {channel_name}')
+        await guild.create_voice_channel(channel_name)
+
+
+@client.command(pass_context=True)
+async def sudo(ctx, role: discord.Role, member: discord.Member = None):
+    member = member or ctx.message.author
+    await client.add_roles(member, role)
+    await ctx.channel.purge(1)
+
+
+class Greetings(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+        self._last_member = None
+
+    @commands.Cog.listener()
+    async def on_member_join(self, member):
+        channel = member.guild.system_channel
+        if channel is not None:
+            print('Ola!')
+
+
+@client.event
+async def on_member_join(member):
+    role = discord.utils.get(member.server.roles, id="717660267726766112")
+    await client.add_roles(member, role)
 
 
 @client.event
@@ -46,7 +97,12 @@ async def ping(ctx):
 
 
 @client.command()
-@commands.check(close_friends)
+async def nword(ctx):
+    await ctx.send('ni||ce ca||r')
+
+
+@client.command()
+@commands.check(crazy_ones)
 async def mariana(ctx):
     await ctx.send('Cala-te')
     time.sleep(1)
@@ -76,12 +132,6 @@ async def dinis(ctx):
     await ctx.send('Stfu CringeMan')
     time.sleep(5)
     await ctx.send('JK I SIMP DINIS')
-    
-
-@client.event
-async def on_rank_info(message):
-    if '!rank' in message.content:
-        await ctx.send(f'Hi {ctx.author}!')
 
 
 @client.command()
@@ -125,6 +175,12 @@ async def userinfo(ctx, member: discord.Member = None):
     embed.add_field(name="Bot?", value=member.bot)
 
     await ctx.send(embed=embed)
+
+
+@client.command()
+async def bat(ctx):
+    price = cryptocompare.get_price('BAT', 'EUR')
+    await ctx.send(price['BAT']['EUR'], "€")
 
 
 client.run(TOKEN)
